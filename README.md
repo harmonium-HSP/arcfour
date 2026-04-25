@@ -32,14 +32,30 @@ A C implementation of the RC4 stream cipher with enhanced security through initi
 
 ### Prerequisites
 
-- CMake 3.16+
-- GCC, Clang, or MSVC
-- Python 3.6+ (for Python bindings)
+| Tool | Minimum Version | Recommended Version | Purpose |
+|------|-----------------|---------------------|---------|
+| CMake | 3.16 | 3.22+ | Build system |
+| GCC | 8.0 | 11.0+ | Linux/macOS compiler |
+| Clang | 9.0 | 14.0+ | macOS/Linux compiler |
+| MSVC | 2019 | 2022 | Windows compiler |
+| Python | 3.6 | 3.10+ | Python bindings |
+| Emscripten | 2.0 | 3.1+ | WebAssembly |
+| Make | 4.0 | 4.3+ | Build tool |
+| Git | 2.20 | 2.38+ | Version control |
 
 ### Build Options
 
+You can use either CMake directly or the provided Makefile wrapper:
+
 ```bash
-# Basic build
+# Using Makefile (recommended)
+make build        # Build the project
+make test         # Run tests
+make clean        # Clean build directory
+make coverage     # Generate coverage report
+make debug        # Build debug version
+
+# Using CMake directly
 mkdir build && cd build
 cmake ..
 make
@@ -47,12 +63,6 @@ make
 # Build with all features
 cmake -DARCFOUR_STATIC_ONLY=ON -DBUILD_DMA=ON -DBUILD_ISR_API=ON -DBUILD_POWER_API=ON ..
 make
-
-# Build examples
-make example
-
-# Run tests
-make test
 ```
 
 ### CMake Options
