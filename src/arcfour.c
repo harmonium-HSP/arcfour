@@ -138,7 +138,14 @@ static int run_single_test(const rc4_test_vector_t* tv, int test_num) {
     arcfour_ctx_t ctx;
     arcfour_init_static(&ctx, tv->key, tv->key_len);
     
+    // MSVC does not support C99 variable-length arrays (VLA)
+    // Use _alloca for MSVC compatibility
+    #ifdef _MSC_VER
+    uint8_t* result = (uint8_t*)_alloca(tv->plaintext_len * sizeof(uint8_t));
+    #else
     uint8_t result[tv->plaintext_len];
+    #endif
+    
     arcfour_encrypt_static(&ctx, tv->plaintext, result, tv->plaintext_len);
     arcfour_uninit_static(&ctx);
     
