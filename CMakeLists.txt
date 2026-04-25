@@ -23,8 +23,18 @@ option(ARCFOUR_STATIC_ONLY "Build static-only version without malloc/free" OFF)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall -Wextra -g")
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Wall -Wextra -O2")
+# Compiler-specific flags
+if(MSVC)
+    # MSVC compiler options
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /W4 /Od")
+    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /W4 /O2")
+    # Disable specific warnings
+    add_compile_options(/wd4996)  # Disable deprecation warnings
+else()
+    # GCC/Clang compiler options
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall -Wextra -g")
+    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Wall -Wextra -O2")
+endif()
 
 include(CheckSymbolExists)
 check_symbol_exists(explicit_bzero "string.h" HAVE_EXPLICIT_BZERO)
