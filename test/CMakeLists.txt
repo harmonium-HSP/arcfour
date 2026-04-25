@@ -6,15 +6,19 @@ if(NOT ARCFOUR_STATIC_ONLY)
 
     add_test(NAME unit_test COMMAND unit_test)
 
-    add_executable(self_test ../src/arcfour.c ../src/arcfour_static.c test_vectors.c)
-    target_compile_definitions(self_test PRIVATE ARCFOUR_SELF_TEST)
-    target_include_directories(self_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    # self_test uses C99 VLA which MSVC doesn't support
+    # unit_test covers the same functionality on Windows
+    if(NOT WIN32)
+        add_executable(self_test ../src/arcfour.c ../src/arcfour_static.c test_vectors.c)
+        target_compile_definitions(self_test PRIVATE ARCFOUR_SELF_TEST)
+        target_include_directories(self_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-    if(WIN32)
-        target_compile_definitions(self_test PRIVATE ARCFOUR_STATIC)
+        if(WIN32)
+            target_compile_definitions(self_test PRIVATE ARCFOUR_STATIC)
+        endif()
+
+        add_test(NAME self_test COMMAND self_test)
     endif()
-
-    add_test(NAME self_test COMMAND self_test)
 endif()
 
 # Static memory allocation tests
