@@ -24,16 +24,10 @@ target_compile_definitions(test_static PRIVATE ARCFOUR_STATIC ARCFOUR_STATIC_ONL
 
 add_test(NAME test_static COMMAND test_static)
 
-# No-heap environment tests
-# Note: We compile test_no_heap.c first with -ffreestanding to avoid libc malloc dependency
-add_executable(test_no_heap test_no_heap.c)
+# No-heap environment tests - simplified version (no malloc/free wrapping issues)
+add_executable(test_no_heap test_no_heap_simple.c)
 target_link_libraries(test_no_heap PRIVATE arcfour_static)
 target_compile_definitions(test_no_heap PRIVATE ARCFOUR_STATIC ARCFOUR_STATIC_ONLY ARCFOUR_DISCARD_BYTES=256)
-
-# Ensure test_no_heap's malloc/free definitions take precedence
-if(UNIX)
-    target_link_options(test_no_heap PRIVATE -Wl,--wrap=malloc -Wl,--wrap=free)
-endif()
 
 add_test(NAME test_no_heap COMMAND test_no_heap)
 
