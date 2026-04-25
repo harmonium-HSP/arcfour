@@ -59,7 +59,8 @@ jobs:
       if: runner.os == 'macOS'
       run: |
         cd build
-        make -j$(sysctl -n hw.ncpu)
+        # Build with verbose output to see link commands
+        make -j$(sysctl -n hw.ncpu) VERBOSE=1 2>&1 | tail -150
 
     - name: Build (Windows)
       if: runner.os == 'Windows'
