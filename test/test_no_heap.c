@@ -6,7 +6,7 @@
  * 
  * When compiled with ARCFOUR_STATIC_ONLY, all dynamic memory allocation
  * should be disabled. If the code accidentally calls malloc/free, it
- * will link to the dummy implementations below which will cause a failure.
+ * will link to the wrapped implementations below which will cause a failure.
  */
 
 #include <stdio.h>
@@ -14,17 +14,25 @@
 #include <stdint.h>
 
 /* 
- * Dummy malloc/free implementations that will cause test failure
- * if called. This verifies that the static version doesn't use heap.
+ * Wrapped malloc/free implementations that will cause test failure
+ * if called. Uses -Wl,--wrap linker flag to intercept calls.
  */
-void* malloc(size_t size) {
+void* __real_malloc(size_t size);
+void __real_free(void* ptr);
+
+static int malloc_called = 0;
+static int free_called = 0;
+
+void* __wrap_malloc(size_t size) {
     (void)size;
+    malloc_called = 1;
     printf("❌ ERROR: malloc() was called - this should not happen in static mode!\n");
     while(1);  /* Dead loop - test fails if we reach here */
 }
 
-void free(void* ptr) {
+void __wrap_free(void* ptr) {
     (void)ptr;
+    free_called = 1;
     printf("❌ ERROR: free() was called - this should not happen in static mode!\n");
     while(1);  /* Dead loop - test fails if we reach here */
 }
