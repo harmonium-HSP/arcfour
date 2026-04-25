@@ -74,7 +74,7 @@ jobs:
       if: runner.os != 'Windows'
       run: |
         cd build
-        ctest -v
+        ctest -V --output-on-failure
 
     - name: Run tests (Windows)
       if: runner.os == 'Windows'
@@ -83,4 +83,4 @@ jobs:
         # Add build directories to PATH to find DLLs
         $env:PATH = "D:\a\arcfour\arcfour\build\${{ matrix.build_type }};$env:PATH"
         $env:PATH = "D:\a\arcfour\arcfour\build\test\${{ matrix.build_type }};$env:PATH"
-        ctest -v -C ${{ matrix.build_type }}
+        ctest -C ${{ matrix.build_type }} -V --output-on-failure
