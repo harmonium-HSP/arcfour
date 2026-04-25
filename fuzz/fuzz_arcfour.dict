@@ -1,0 +1,73 @@
+# OSS-Fuzz dictionary for arcfour library
+#
+# This dictionary contains common patterns that help the fuzzer
+# discover vulnerabilities more efficiently.
+#
+
+# Operation types
+op_init_static="\x00"
+op_encrypt_static="\x01"
+op_decrypt_static="\x02"
+op_skip_static="\x03"
+op_aead_encrypt="\x04"
+op_aead_decrypt="\x05"
+op_dma_encrypt="\x06"
+op_dma_keystream="\x07"
+op_double_buffer="\x08"
+op_power_aware="\x09"
+op_utils="\x0a"
+op_multi_op="\x0b"
+
+# Key patterns
+key_all_zero="\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+key_all_ff="\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
+key_alternating="\x00\xff\x00\xff\x00\xff\x00\xff\x00\xff\x00\xff\x00\xff\x00\xff"
+key_ascending="\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f"
+key_ones="\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01"
+key_repeated="\x42\x42\x42\x42\x42\x42\x42\x42\x42\x42\x42\x42\x42\x42\x42\x42"
+
+# Common passwords
+key_password="password"
+key_secret="secret123"
+key_admin="admin1234"
+key_test="testtest"
+
+# Nonce patterns
+nonce_all_zero="\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+nonce_all_ff="\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
+nonce_counter="\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01"
+nonce_timestamp="\x7f\xff\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00"
+
+# Length patterns (boundary values)
+len_zero="\x00\x00\x00\x00"
+len_one="\x01\x00\x00\x00"
+len_256="\x00\x01\x00\x00"
+len_65535="\xff\xff\x00\x00"
+len_1024="\x00\x04\x00\x00"
+len_4096="\x00\x10\x00\x00"
+
+# AAD patterns
+aad_empty=""
+aad_short="test"
+aad_http="HTTP/1.1"
+aad_json="{\"type\":\"test\"}"
+
+# Edge case inputs
+input_empty=""
+input_single="\x00"
+input_255_bytes="\x00"
+input_256_bytes="\x00"
+input_all_zero="\x00"
+input_all_ff="\xff"
+
+# RC4 known weak patterns
+weak_keystream="\xde\xad\xbe\xef"
+weak_nonce="\x00\x00\x00\x00"
+
+# Buffer overflow triggers
+large_size="\xff\xff\xff\xff"
+medium_size="\x00\x00\x40\x00"  # 16384 bytes
+
+# Alignment patterns
+aligned_addr="\x00\x00\x00\x00"
+unaligned_addr="\x01\x00\x00\x00"

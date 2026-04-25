@@ -1,0 +1,62 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        build_type: [Debug, Release]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up CMake
+      uses: jwlawson/actions-setup-cmake@v1.14.0
+      with:
+        cmake-version: '3.25.x'
+
+    - name: Configure CMake (Linux/macOS)
+      if: runner.os != 'Windows'
+      run: |
+        mkdir -p build
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DBUILD_TESTS=ON
+
+    - name: Configure CMake (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        mkdir build
+        cd build
+        cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DBUILD_TESTS=ON
+
+    - name: Build (Linux/macOS)
+      if: runner.os != 'Windows'
+      run: |
+        cd build
+        make -j$(nproc)
+
+    - name: Build (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        cd build
+        cmake --build . --config ${{ matrix.build_type }}
+
+    - name: Run tests (Linux/macOS)
+      if: runner.os != 'Windows'
+      run: |
+        cd build
+        ctest -v
+
+    - name: Run tests (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        cd build
+        ctest -v -C ${{ matrix.build_type }}

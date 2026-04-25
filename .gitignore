@@ -1,0 +1,66 @@
+# Build directories
+build/
+build_*/
+build-*/
+_build/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+*.cmake
+
+# Library files
+*.a
+*.lib
+*.dll
+*.so
+*.dylib
+
+# Executables
+*.exe
+*.out
+
+# Object files
+*.o
+*.obj
+
+# Test outputs
+Testing/
+*.log
+
+# Documentation
+*.html
+*.pdf
+*.tex
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# WebAssembly
+*.wasm
+*.wasm.map
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Cache files
+.cache/
+.clangd/
+*.idx
+
+# OS files
+.DS_Store
+Thumbs.db

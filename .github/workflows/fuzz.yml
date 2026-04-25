@@ -1,0 +1,120 @@
+name: Fuzz Testing
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  fuzz:
+    name: Fuzz Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang llvm libclang-dev
+
+    - name: Build fuzz target
+      run: |
+        # Create build directory
+        mkdir -p build_fuzz
+        cd build_fuzz
+        
+        # Compile with sanitizers
+        CC=clang
+        CXX=clang++
+        
+        # Compiler flags
+        COMMON_FLAGS="-fsanitize=fuzzer-no-link,address,undefined -O1 -g"
+        COMMON_FLAGS+=" -fno-omit-frame-pointer -fno-optimize-sibling-calls"
+        COMMON_FLAGS+=" -Wall -Wextra"
+        
+        # Compile source files
+        $CC $COMMON_FLAGS -Iinclude -Isrc -c ../src/arcfour.c -o arcfour.o
+        $CC $COMMON_FLAGS -Iinclude -Isrc -c ../src/arcfour_static.c -o arcfour_static.o
+        $CC $COMMON_FLAGS -Iinclude -Isrc -c ../src/aead_rc4.c -o aead_rc4.o
+        $CC $COMMON_FLAGS -Iinclude -Isrc -c ../src/arcfour_utils.c -o arcfour_utils.o
+        $CC $COMMON_FLAGS -Iinclude -Isrc -c ../src/arcfour_dma.c -o arcfour_dma.o
+        
+        # Create static library
+        ar rcs libarcfour.a arcfour.o arcfour_static.o aead_rc4.o arcfour_utils.o arcfour_dma.o
+        
+        # Compile fuzz target with fuzzer
+        $CXX $COMMON_FLAGS -Iinclude -Isrc \
+            ../fuzz/fuzz_arcfour.cc \
+            libarcfour.a \
+            -fsanitize=fuzzer \
+            -o fuzz_arcfour
+
+    - name: Run short fuzz test
+      run: |
+        cd build_fuzz
+        timeout --signal=SIGINT 60 ./fuzz_arcfour -max_total_time=60
+        
+    - name: Run dictionary-aided fuzz test
+      run: |
+        cd build_fuzz
+        timeout --signal=SIGINT 60 ./fuzz_arcfour -dict=../fuzz/fuzz_arcfour.dict -max_total_time=60
+
+  coverage:
+    name: Fuzz Coverage
+    runs-on: ubuntu-latest
+    needs: fuzz
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang llvm lcov
+
+    - name: Build with coverage
+      run: |
+        mkdir -p build_coverage
+        cd build_coverage
+        
+        CC=clang
+        CXX=clang++
+        
+        COV_FLAGS="-fprofile-instr-generate -fcoverage-mapping -O0 -g"
+        
+        # Compile with coverage
+        $CC $COV_FLAGS -Iinclude -Isrc -c ../src/arcfour.c -o arcfour.o
+        $CC $COV_FLAGS -Iinclude -Isrc -c ../src/arcfour_static.c -o arcfour_static.o
+        $CC $COV_FLAGS -Iinclude -Isrc -c ../src/aead_rc4.c -o aead_rc4.o
+        $CC $COV_FLAGS -Iinclude -Isrc -c ../src/arcfour_utils.c -o arcfour_utils.o
+        $CC $COV_FLAGS -Iinclude -Isrc -c ../src/arcfour_dma.c -o arcfour_dma.o
+        
+        ar rcs libarcfour.a arcfour.o arcfour_static.o aead_rc4.o arcfour_utils.o arcfour_dma.o
+        
+        $CXX $COV_FLAGS -Iinclude -Isrc \
+            ../fuzz/fuzz_arcfour.cc \
+            libarcfour.a \
+            -fsanitize=fuzzer \
+            -o fuzz_arcfour
+
+    - name: Run coverage fuzz
+      run: |
+        cd build_coverage
+        export LLVM_PROFILE_FILE="fuzz_arcfour.profraw"
+        timeout --signal=SIGINT 30 ./fuzz_arcfour -max_total_time=30
+        
+    - name: Generate coverage report
+      run: |
+        cd build_coverage
+        llvm-profdata merge -o fuzz_arcfour.profdata fuzz_arcfour.profraw
+        llvm-cov show ./fuzz_arcfour -instr-profile=fuzz_arcfour.profdata \
+            -show-line-counts-or-regions -output-dir=coverage_report
+        llvm-cov report ./fuzz_arcfour -instr-profile=fuzz_arcfour.profdata

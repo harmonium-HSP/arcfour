@@ -1,0 +1,12 @@
+CompileFlags:
+  Add: [-Iinclude]
+  Remove: []
+
+Diagnostics:
+  ClangTidy:
+    Checks: []
+
+Index:
+  Background: Build
+  Exclude:
+    - cmake/

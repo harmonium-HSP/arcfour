@@ -1,0 +1,9 @@
+#ifndef ARCFOUR_CONFIG_H
+#define ARCFOUR_CONFIG_H
+
+#define ARCFOUR_VERSION "@PROJECT_VERSION@"
+
+#cmakedefine HAVE_EXPLICIT_BZERO
+#cmakedefine HAVE_MEMSET_S
+
+#endif
