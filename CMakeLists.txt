@@ -7,7 +7,12 @@ project(arcfour
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+# Windows only builds static libraries to avoid DLL dependency issues
+if(WIN32)
+    option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+else()
+    option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+endif()
 option(BUILD_TESTING "Build tests" ON)
 option(BUILD_EXAMPLE "Build example" ON)
 option(BUILD_AEAD_RC4 "Build RC4 + Poly1305 AEAD mode" ON)
