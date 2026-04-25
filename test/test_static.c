@@ -115,19 +115,19 @@ static int test_reset(void) {
 static int test_memory_size(void) {
     /* Compile-time check: context size should be 259 bytes (256 + 1 + 1 + 1) */
     if (sizeof(arcfour_ctx_t) != ARCFOUR_CONTEXT_SIZE) {
-        printf("❌ Test 4: Memory size mismatch - expected %u, got %zu\n", 
-               ARCFOUR_CONTEXT_SIZE, sizeof(arcfour_ctx_t));
+        printf("❌ Test 4: Memory size mismatch - expected %zu, got %zu\n", 
+               (size_t)ARCFOUR_CONTEXT_SIZE, sizeof(arcfour_ctx_t));
         return 1;
     }
     
     /* Expected size: 256 (S-box) + 1 (i) + 1 (j) + 1 (initialized) = 259 */
     if (ARCFOUR_CONTEXT_SIZE != 259) {
-        printf("❌ Test 4: ARCFOUR_CONTEXT_SIZE incorrect - expected 259, got %u\n",
-               ARCFOUR_CONTEXT_SIZE);
+        printf("❌ Test 4: ARCFOUR_CONTEXT_SIZE incorrect - expected 259, got %zu\n",
+               (size_t)ARCFOUR_CONTEXT_SIZE);
         return 1;
     }
     
-    printf("✅ Test 4: Memory size verification PASSED (%u bytes)\n", ARCFOUR_CONTEXT_SIZE);
+    printf("✅ Test 4: Memory size verification PASSED (%zu bytes)\n", (size_t)ARCFOUR_CONTEXT_SIZE);
     return 0;
 }
 
