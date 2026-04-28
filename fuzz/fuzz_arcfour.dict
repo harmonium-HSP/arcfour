@@ -52,7 +52,6 @@ aad_http="HTTP/1.1"
 aad_json="{\"type\":\"test\"}"
 
 # Edge case inputs
-input_empty=""
 input_single="\x00"
 input_255_bytes="\x00"
 input_256_bytes="\x00"
