@@ -37,18 +37,18 @@ jobs:
         COMMON_FLAGS+=" -fno-omit-frame-pointer -fno-optimize-sibling-calls"
         COMMON_FLAGS+=" -Wall -Wextra"
         
-        # Compile source files
-        $CC $COMMON_FLAGS -Iinclude -Isrc -c ../src/arcfour.c -o arcfour.o
-        $CC $COMMON_FLAGS -Iinclude -Isrc -c ../src/arcfour_static.c -o arcfour_static.o
-        $CC $COMMON_FLAGS -Iinclude -Isrc -c ../src/aead_rc4.c -o aead_rc4.o
-        $CC $COMMON_FLAGS -Iinclude -Isrc -c ../src/arcfour_utils.c -o arcfour_utils.o
-        $CC $COMMON_FLAGS -Iinclude -Isrc -c ../src/arcfour_dma.c -o arcfour_dma.o
+        # Compile source files (path relative to build_fuzz/)
+        $CC $COMMON_FLAGS -I../include -I../src -c ../src/arcfour.c -o arcfour.o
+        $CC $COMMON_FLAGS -I../include -I../src -c ../src/arcfour_static.c -o arcfour_static.o
+        $CC $COMMON_FLAGS -I../include -I../src -c ../src/aead_rc4.c -o aead_rc4.o
+        $CC $COMMON_FLAGS -I../include -I../src -c ../src/arcfour_utils.c -o arcfour_utils.o
+        $CC $COMMON_FLAGS -I../include -I../src -c ../src/arcfour_dma.c -o arcfour_dma.o
         
         # Create static library
         ar rcs libarcfour.a arcfour.o arcfour_static.o aead_rc4.o arcfour_utils.o arcfour_dma.o
         
         # Compile fuzz target with fuzzer
-        $CXX $COMMON_FLAGS -Iinclude -Isrc \
+        $CXX $COMMON_FLAGS -I../include -I../src \
             ../fuzz/fuzz_arcfour.cc \
             libarcfour.a \
             -fsanitize=fuzzer \
@@ -90,16 +90,16 @@ jobs:
         
         COV_FLAGS="-fprofile-instr-generate -fcoverage-mapping -O0 -g"
         
-        # Compile with coverage
-        $CC $COV_FLAGS -Iinclude -Isrc -c ../src/arcfour.c -o arcfour.o
-        $CC $COV_FLAGS -Iinclude -Isrc -c ../src/arcfour_static.c -o arcfour_static.o
-        $CC $COV_FLAGS -Iinclude -Isrc -c ../src/aead_rc4.c -o aead_rc4.o
-        $CC $COV_FLAGS -Iinclude -Isrc -c ../src/arcfour_utils.c -o arcfour_utils.o
-        $CC $COV_FLAGS -Iinclude -Isrc -c ../src/arcfour_dma.c -o arcfour_dma.o
+        # Compile with coverage (path relative to build_coverage/)
+        $CC $COV_FLAGS -I../include -I../src -c ../src/arcfour.c -o arcfour.o
+        $CC $COV_FLAGS -I../include -I../src -c ../src/arcfour_static.c -o arcfour_static.o
+        $CC $COV_FLAGS -I../include -I../src -c ../src/aead_rc4.c -o aead_rc4.o
+        $CC $COV_FLAGS -I../include -I../src -c ../src/arcfour_utils.c -o arcfour_utils.o
+        $CC $COV_FLAGS -I../include -I../src -c ../src/arcfour_dma.c -o arcfour_dma.o
         
         ar rcs libarcfour.a arcfour.o arcfour_static.o aead_rc4.o arcfour_utils.o arcfour_dma.o
         
-        $CXX $COV_FLAGS -Iinclude -Isrc \
+        $CXX $COV_FLAGS -I../include -I../src \
             ../fuzz/fuzz_arcfour.cc \
             libarcfour.a \
             -fsanitize=fuzzer \
