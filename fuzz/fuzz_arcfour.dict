@@ -47,7 +47,7 @@ len_1024="\x00\x04\x00\x00"
 len_4096="\x00\x10\x00\x00"
 
 # AAD patterns
-aad_empty=""
+aad_empty="a"
 aad_short="test"
 aad_http="HTTP/1.1"
 aad_json="{\"type\":\"test\"}"
