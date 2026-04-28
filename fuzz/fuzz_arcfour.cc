@@ -383,23 +383,24 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         }
 
         case OP_UTILS: {
-            // Test utility functions
-            uint8_t buf[256];
-            for (size_t i = 0; i < sizeof(buf); i++) {
-                buf[i] = get_byte(data, size);
-            }
-            
-            // Test alignment check
-            int aligned = arcfour_dma_is_aligned(buf, 4);
-            (void)aligned;
-            
-            // Test aligned allocation (only in non-static mode)
-            void* alloc = arcfour_dma_alloc_aligned(512);
-            if (alloc) {
-                arcfour_dma_free_aligned(alloc);
-            }
-            break;
+        uint8_t buf[256];
+        for (size_t i = 0; i < sizeof(buf); i++) {
+            buf[i] = get_byte(data, size);
+    }
+    
+        int aligned = arcfour_dma_is_aligned(buf, 4);
+        (void)aligned;
+    
+        // 只在非静态模式下测试
+    #ifndef ARCFOUR_STATIC_ONLY
+        void* alloc = arcfour_dma_alloc_aligned(512);
+        if (alloc) {
+            arcfour_dma_free_aligned(alloc);
+            alloc = nullptr;  // 释放后置空
         }
+    #endif
+        break;
+    }
 
         case OP_MULTI_OP: {
             // Combined operations test

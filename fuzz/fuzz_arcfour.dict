@@ -47,13 +47,11 @@ len_1024="\x00\x04\x00\x00"
 len_4096="\x00\x10\x00\x00"
 
 # AAD patterns
-aad_empty=""
 aad_short="test"
 aad_http="HTTP/1.1"
 aad_json="{\"type\":\"test\"}"
 
 # Edge case inputs
-input_empty=""
 input_single="\x00"
 input_255_bytes="\x00"
 input_256_bytes="\x00"
@@ -66,7 +64,7 @@ weak_nonce="\x00\x00\x00\x00"
 
 # Buffer overflow triggers
 large_size="\xff\xff\xff\xff"
-medium_size="\x00\x00\x40\x00"  # 16384 bytes
+medium_size="\x00\x00\x40\x00"
 
 # Alignment patterns
 aligned_addr="\x00\x00\x00\x00"
