@@ -32,7 +32,7 @@ jobs:
     - name: Run tests
       run: |
         cd build
-        ctest -v
+        ctest -V --output-on-failure
 
     - name: Generate coverage report
       run: |
