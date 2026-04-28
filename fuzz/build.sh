@@ -26,8 +26,8 @@ COMMON_FLAGS+=" -Wall -Wextra -Werror"
 SRCS="src/arcfour.c src/arcfour_static.c src/aead_rc4.c src/arcfour_utils.c"
 SRCS+=" src/arcfour_dma.c src/arcfour_isr.c src/arcfour_power.c"
 
-# Include directories
-INCLUDES="-Iinclude -Isrc"
+# Include directories (relative to build_fuzz/ directory)
+INCLUDES="-I../include -I../src"
 
 # Build directory
 mkdir -p build_fuzz
