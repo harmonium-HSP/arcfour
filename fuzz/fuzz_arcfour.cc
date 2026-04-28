@@ -239,8 +239,12 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
             size -= ciphertext_len;
             
             uint8_t* tag = nullptr;
+            uint8_t tag_buffer[MAX_TAG_SIZE] = {0};
             if (size >= MAX_TAG_SIZE) {
-                tag = const_cast<uint8_t*>(data);
+                memcpy(tag_buffer, data, MAX_TAG_SIZE);
+                tag = tag_buffer;
+                data += MAX_TAG_SIZE;
+                size -= MAX_TAG_SIZE;
             }
             
             uint8_t* plaintext = new uint8_t[ciphertext_len];
