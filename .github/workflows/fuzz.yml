@@ -125,9 +125,18 @@ jobs:
 
     - name: Run coverage fuzz
       run: |
+        set +e
         cd build_coverage
         export LLVM_PROFILE_FILE="fuzz_arcfour.profraw"
         timeout --signal=SIGINT 30 ./fuzz_arcfour -max_total_time=30
+        exit_code=$?
+        set -e
+        if [ $exit_code -eq 124 ]; then
+          echo "Coverage fuzzing completed (timeout is success)"
+          exit 0
+        else
+          exit $exit_code
+        fi
         
     - name: Generate coverage report
       run: |
