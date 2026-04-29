@@ -58,7 +58,8 @@ jobs:
       run: |
         set +e
         cd build_fuzz
-        timeout --signal=SIGINT 60 ./fuzz_arcfour -max_total_time=60 || exit_code=$?
+        timeout --signal=SIGINT 60 ./fuzz_arcfour -max_total_time=60
+        exit_code=$?
         set -e
         if [ $exit_code -eq 124 ]; then
           echo "Fuzzing completed (timeout is success)"
@@ -69,8 +70,11 @@ jobs:
         
     - name: Run dictionary-aided fuzz test
       run: |
+        set +e
         cd build_fuzz
-        timeout --signal=SIGINT 60 ./fuzz_arcfour -dict=../fuzz/fuzz_arcfour.dict -max_total_time=60 || exit_code=$?
+        timeout --signal=SIGINT 60 ./fuzz_arcfour -dict=../fuzz/fuzz_arcfour.dict -max_total_time=60
+        exit_code=$?
+        set -e
         if [ $exit_code -eq 124 ]; then
           echo "Fuzzing completed (timeout is success)"
           exit 0
